@@ -69,7 +69,6 @@ class ImageClassificationModel:
         confidence = percentage[pred].detach().numpy()
         with open("sample_data/imagenet_classes.txt", "r") as fp:
             classes = fp.readlines()
-        print(classes)
         pred = classes[pred].replace("\n","")
         return pred, confidence
     

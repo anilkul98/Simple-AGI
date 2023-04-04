@@ -12,3 +12,9 @@ COCO_INSTANCE_CATEGORY_NAMES = [
     'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'N/A', 'book',
     'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush'
 ]
+
+PROMPT = f"""Could you define the computer vision tasks between following option depends on the question asked. There might be multiple tasks as an answer. Please answer only the number of the options. If the question is not related to topic just answer with "-1". The only possible answers are options or "-1".
+            1 - Object Detection
+            2 - Image Classification
+            Question:
+            """
