@@ -3,6 +3,7 @@ from torchvision import models
 from PIL import Image
 import torchvision.transforms as transforms
 from problem_enum import ProblemType
+from constants import COCO_INSTANCE_CATEGORY_NAMES
 
 class AGIModel:
     def __init__(self, detected_problems):
@@ -25,7 +26,6 @@ class AGIModel:
             results_dct[ProblemType.OBJECT_DETECTION.value] = obj_detection_pred
         if self.image_classification_model is not None:
             img_classification_pred = self.image_classification_model.get_inference(input_path)
-            print(img_classification_pred)
             results_dct[ProblemType.IMAGE_CLASSIFICATION.value] = img_classification_pred
         return results_dct
             
@@ -40,7 +40,13 @@ class ObjectDetectionModel:
         img_tensor = self.transform(image)
         self.model.eval()
         pred = self.model([img_tensor])
-        return pred
+        scores = pred[0]["scores"].cpu().detach().numpy()
+        boxes = pred[0]["boxes"].cpu().detach().numpy()[scores > 0.5]
+        labels = pred[0]["labels"].cpu().detach().numpy()[scores > 0.5]
+        labels = [COCO_INSTANCE_CATEGORY_NAMES[l] for l in labels]
+        scores = scores[scores > 0.5]
+        result = {"boxes": boxes , "labels": labels, "scores": scores}
+        return result 
     
     def transform(self, image):
         transform = transforms.Compose([
@@ -61,6 +67,10 @@ class ImageClassificationModel:
         percentage = torch.nn.functional.softmax(pred, dim=1)[0] * 100
         pred = torch.argmax(percentage).cpu().detach().numpy()
         confidence = percentage[pred].detach().numpy()
+        with open("sample_data/imagenet_classes.txt", "r") as fp:
+            classes = fp.readlines()
+        print(classes)
+        pred = classes[pred].replace("\n","")
         return pred, confidence
     
     def transform(self, image):

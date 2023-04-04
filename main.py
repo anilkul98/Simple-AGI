@@ -4,7 +4,6 @@ import yaml
 from yaml.loader import SafeLoader
 from model import AGIModel
 from problem_enum import ProblemType
-from constants import COCO_INSTANCE_CATEGORY_NAMES
 
 with open('credentials.yaml') as f:
     credentials = yaml.load(f, Loader=SafeLoader)
@@ -13,7 +12,7 @@ openai.organization = credentials["organization_id"]
 openai.api_key = credentials["api_key"]
 
 # agi = AGIModel(["1 - Object Detection"])
-agi = AGIModel(["2 - Image Classification"])
+agi = AGIModel(["1 - Object Detection", "2 - Image Classification"])
 results_dct = agi.get_results("sample_data/img-classification/hagnose-sneak.jpeg")
 print(results_dct)
 # res_labels = results_dct["labels"].cpu().detach().numpy()
